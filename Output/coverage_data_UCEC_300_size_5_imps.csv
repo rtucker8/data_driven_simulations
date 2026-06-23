@@ -1,0 +1,11 @@
+time,cancer_type,method,sample_size,n_imps,coverage,undefined_region_pct
+365,UCEC,MSMI-Marginal,300,5,0.952,0
+730,UCEC,MSMI-Marginal,300,5,0.954,0
+1095,UCEC,MSMI-Marginal,300,5,0.936,0
+1460,UCEC,MSMI-Marginal,300,5,0.914,0
+1825,UCEC,MSMI-Marginal,300,5,0.898,0
+365,UCEC,AJ,300,5,0.946,0
+730,UCEC,AJ,300,5,0.954,0
+1095,UCEC,AJ,300,5,0.954,0
+1460,UCEC,AJ,300,5,0.954,0
+1825,UCEC,AJ,300,5,0.958,0

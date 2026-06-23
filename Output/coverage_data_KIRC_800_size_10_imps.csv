@@ -1,0 +1,11 @@
+time,cancer_type,method,sample_size,n_imps,coverage,undefined_region_pct
+365,KIRC,MSMI-Marginal,800,10,0.932,0
+730,KIRC,MSMI-Marginal,800,10,0.946,0
+1095,KIRC,MSMI-Marginal,800,10,0.954,0
+1460,KIRC,MSMI-Marginal,800,10,0.942,0
+1825,KIRC,MSMI-Marginal,800,10,0.964,0
+365,KIRC,AJ,800,10,0.926,0
+730,KIRC,AJ,800,10,0.932,0
+1095,KIRC,AJ,800,10,0.952,0
+1460,KIRC,AJ,800,10,0.954,0
+1825,KIRC,AJ,800,10,0.964,0

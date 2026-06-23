@@ -1,0 +1,11 @@
+time,cancer_type,method,sample_size,n_imps,coverage,undefined_region_pct
+365,KICH,MSMI-Marginal,500,10,0.97,0
+730,KICH,MSMI-Marginal,500,10,0.962,0
+1095,KICH,MSMI-Marginal,500,10,0.954,0
+1460,KICH,MSMI-Marginal,500,10,0.954,0
+1825,KICH,MSMI-Marginal,500,10,0.946,0
+365,KICH,AJ,500,10,0.964,0
+730,KICH,AJ,500,10,0.952,0
+1095,KICH,AJ,500,10,0.942,0
+1460,KICH,AJ,500,10,0.934,0
+1825,KICH,AJ,500,10,0.936,0
