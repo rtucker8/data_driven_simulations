@@ -9,9 +9,9 @@
 #SBATCH --account=wdem2
 #SBATCH --partition=standard
 #SBATCH --output=logs/%x-%A_%a.log
-#SBATCH --array=1-192
+#SBATCH --array=1-2
 
-cd /home/rbtucker/tcga_simulations
+cd /home/rbtucker/real_data_simulations
 module load R
 
-R run_cluster_sum.R $SLURM_ARRAY_TASK_ID
+R run_cluster_sim.R $SLURM_ARRAY_TASK_ID
