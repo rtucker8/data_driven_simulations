@@ -11,7 +11,7 @@ library(tidyverse)
 
 # Load simulation results ---------------------------------------------------------------
 coverage_data <- list.files(
-  path = "data_driven_simulations/Output",
+  path = "Output",
   pattern = "^coverage_data_.*\\.csv$",
   full.names = TRUE
 ) |>
@@ -26,9 +26,11 @@ coverage_data <- list.files(
   select(-filename)
 
 coverage_by_cancer <- coverage_data |>
+  filter(cancer_type %in% c("MESO", "LIHC", "PRAD")) |>
   group_by(cancer_type) |>
   group_split() |>
-  set_names(unique(sort(coverage_data$cancer_type)))
+  set_names(sort(c("MESO", "LIHC", "PRAD")))
+  #set_names(unique(sort(coverage_data$cancer_type)))
 
 
 #Make plots that compare the coverage across different settings
@@ -54,7 +56,7 @@ for (cancer in names(coverage_by_cancer)) {
     )
 
   ggsave(
-    paste0("data_driven_simulations/Output/Figures/coverage_", cancer, ".pdf"),
+    paste0("Output/Figures/coverage_", cancer, ".pdf"),
     height = 8,
     width = 10
   )

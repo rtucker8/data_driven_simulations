@@ -13,7 +13,6 @@ library(mstate) #implements Aalen-Johansen estimation
 library(msmi) #proposed methods
 library(ggtern) #plot on the simplex
 library(sp) #check if point is inside of a convex hull
-library(furrr) #parallel processing
 library(PWEXP)
 
 # Load functions, true parameters, and random seeds ---------------------------------------------------------------
@@ -435,7 +434,7 @@ tag <- paste0(cancer_type,
     paste0(
       "Output/bias_data_",
       tag,
-      ".pdf"
+      ".csv"
     )
   )
 
@@ -576,7 +575,7 @@ tag <- paste0(cancer_type,
     paste0(
       "Output/coverage_data_",
       tag,
-      ".pdf"
+      ".csv"
     )
   )
 
@@ -675,33 +674,4 @@ tag <- paste0(cancer_type,
 
 #No error with larger sample sizes (200 vs 100 for HR = 0) or protective HR (-0.75)
 
-#Run all of the simulation settings in parallel-
 
-#For each cancer type, vary the number of people, imputations, and logHR for T1
-params <- crossing(
-  cancer_type = c("LIHC", "MESO", "PRAD", "UCEC", "KIRC", "KICH"),
-  sample_size = c(50, 100, 200, 500),
-  n_imps = c(10, 20, 30, 50),
-  n_sims = 500,
-  beta = c(-0.75, 0)
-)
-
-
-plan(multisession, workers = availableCores() - 1)
-
-results <- future_pmap(
-  params[c(43,44),],
-  function(sample_size, n_sims, n_imps, cancer_type, beta) {
-    run_sim(
-      sample_size = sample_size,
-      n_sims = n_sims,
-      n_imps = n_imps,
-      cancer_type = cancer_type,
-      beta = beta
-    )
-  },
-  .options = furrr_options(seed = TRUE),
-  .progress = TRUE
-)
-
-plan(sequential)
