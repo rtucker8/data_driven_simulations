@@ -24,11 +24,12 @@ random.seeds <- read_csv("randomSeeds.csv")$simulationSeeds #random seeds for da
 # Simulation Setting ------------------------------------------------------
 
 # Some Sample Parameters for Debugging
-sample_size = 100
+sample_size = 50
 n_sims = 500
 n_imps = 10
-cancer_type = "KIRC"
-beta = 0
+cancer_type = "KICH"
+beta = -0.75
+approach = "agresticoull"
 
 #Main Function: runs a simulation for a given setting
   #sample_size: number of patients in each simulated dataset
@@ -37,7 +38,8 @@ beta = 0
   #cancer_type: one of "LIHC", "PRAD", "MESO", "KICH", "KIRC", "UCEC"
   #beta: logHR associated with time of arrival to the illness state for the ill to dead transition hazard
 
-run_sim <- function(sample_size, n_sims, n_imps, cancer_type, beta) {
+
+run_sim <- function(sample_size, n_sims, n_imps, cancer_type, beta, approach) {
 
   ########################
   ##   Preliminaries   ##
@@ -97,17 +99,21 @@ run_sim <- function(sample_size, n_sims, n_imps, cancer_type, beta) {
     events(df.long)$Proportions
   }
 
-check_events(d.sim[[1]])
+# test = map_dbl(d.sim, function(d) {
+#   check_events(d)[2,4]
+# })
+# check_events(d.sim[[2]])[2,4]
 
 #file identifier
 tag <- paste0(cancer_type,
-              "_",
+              "_n",
               as.character(sample_size),
-              "_size_",
+              "_M",
               as.character(n_imps),
-              "_imps_",
+              "_b",
               as.character(beta),
-              "beta")
+              "_",
+              approach)
 
   ################################
   ##   Method: Aalen-Johansen   ##
@@ -268,8 +274,7 @@ tag <- paste0(cancer_type,
     msmi.tprobs(
       imp_obj = imp,
       times = eval_times,
-      #int.type = "agresticoull",
-      int.type = "trWald",
+      int.type = approach, #either "trWald" or "agresticoull"
       alpha = 0.05
     )
   })
@@ -307,23 +312,23 @@ tag <- paste0(cancer_type,
   p_msmi
 
   #Diagnostic Check (Not Saved): Visualize correlation of MSMI point estimates and AJ point estimates
-  mi_results |>
-    rename(pstate1 = pHealthy, pstate2 = pIll, pstate3 = pDead) |>
+  mi_results %>%
+    rename(pstate1 = pHealthy, pstate2 = pIll, pstate3 = pDead) %>%
     left_join(
       aj_results,
       by = c("simulation", "time"),
       suffix = c("_msmi", "_aj")
-    ) |>
+    ) %>%
     pivot_longer(
       cols = starts_with("p"),
       names_to = c("state", "method"),
       names_pattern = "p(.*)_(.*)",
       values_to = "estimate"
-    ) |>
+    ) %>%
     pivot_wider(
       names_from = method,
       values_from = estimate
-    ) |>
+    ) %>%
     ggplot(aes(x = aj, y = msmi)) +
     geom_point(alpha = 0.6) +
     facet_grid(
@@ -366,7 +371,7 @@ tag <- paste0(cancer_type,
     msmi.tprobs(
       imp_obj = imp,
       times = eval_times,
-      int.type = "trWald",
+      int.type = approach, #either trWald or agresitcoull
       alpha = 0.05
     )
   })
@@ -432,7 +437,11 @@ tag <- paste0(cancer_type,
   write_csv(
     bias,
     paste0(
-      "Output/bias_data_",
+      "Results/",
+      approach,
+      "/",
+      tolower(cancer_type),
+      "/bias_data_",
       tag,
       ".csv"
     )
@@ -451,7 +460,7 @@ tag <- paste0(cancer_type,
     geom_hline(yintercept = 0, color = "grey70", linetype = "dashed") +
     facet_wrap(~state, nrow = 3, ncol = 1) +
     labs(
-      title = "Bias of State Occupation Probability Estimates",
+      title = tag,
       x = "Time (Years)",
       y = "Bias"
     ) +
@@ -459,7 +468,11 @@ tag <- paste0(cancer_type,
 
   ggsave(
     paste0(
-      "Output/Figures/bias_",
+      "Results/",
+      approach,
+      "/",
+      tolower(cancer_type),
+      "/Figures/bias_",
       tag,
       ".pdf"
     ),
@@ -473,13 +486,13 @@ tag <- paste0(cancer_type,
   is_missing <- function(x) is.null(x) || (length(x) > 0 && all(is.na(x)))
 
   # truth lookup (one row per time)
-  truth_lookup <- truth_setting |>
+  truth_lookup <- truth_setting %>%
     dplyr::select(time, Healthy, Ill, Dead)
 
   # helper: does hull contain truth at time t?
   contains_truth_hull <- function(hull_xy, t, truth_tbl) {
 
-    tr <- truth_tbl |>
+    tr <- truth_tbl %>%
       dplyr::filter(time == t)
 
     if (is_missing(hull_xy) || nrow(hull_xy) < 3) {
@@ -573,7 +586,11 @@ tag <- paste0(cancer_type,
   write_csv(
     coverage,
     paste0(
-      "Output/coverage_data_",
+      "Results/",
+      approach,
+      "/",
+      tolower(cancer_type),
+      "/coverage_data_",
       tag,
       ".csv"
     )
@@ -585,9 +602,9 @@ tag <- paste0(cancer_type,
     sim_str <- as.character(sim_id)
     print(paste0("Progress: Simulation ", sim_id))
     hulls <- polygon_df %>% filter(simulation == sim_str)
-    hulls_fill <- hulls |>
+    hulls_fill <- hulls %>%
       dplyr::filter(contains_truth %in% TRUE)
-    hulls_outline <- hulls |>
+    hulls_outline <- hulls %>%
       dplyr::filter(!(contains_truth %in% TRUE))
     pts <- truth_setting
     ms_pts <- mi_results %>% filter(simulation == sim_str)
@@ -660,18 +677,4 @@ tag <- paste0(cancer_type,
 
   return()
 }
-
-#Errors caused by msmi_cox method in new settings (KIRC for one):
-#basically, zero survival probability past a certain point ($surv) due to large times to illness fed into cox model
-# Error in `map2()`:
-#   ℹ In index: 335.
-# Caused by error in `purrr::map()`:
-#   ℹ In index: 1.
-# Caused by error in `sample.int()`:
-#   ! too few positive probabilities
-# Run `rlang::last_trace()` to see where the error occurred.
-# Called from: signal_abort(cnd, .file)
-
-#No error with larger sample sizes (200 vs 100 for HR = 0) or protective HR (-0.75)
-
 
