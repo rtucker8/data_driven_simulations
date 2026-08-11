@@ -14,23 +14,14 @@ library(msmi) #proposed methods
 library(ggtern) #plot on the simplex
 library(sp) #check if point is inside of a convex hull
 library(PWEXP) #piecewise exponential distribution
-library(ggrepel)
 
 # Load functions, true parameters, and random seeds ---------------------------------------------------------------
-source("Code/0_data_driven_simulation_helper.R") #helper functions for this simulation study
-load("true_occupation_probabilities.RData") #true state occupation probabilities for each setting
-load("true_parameters.RData") #true piecewise exponential parameters for each setting
-random.seeds <- read_csv("randomSeeds.csv")$simulationSeeds #random seeds for data generation to ensure reproducibility
+source("R/simulation_helper.R") #helper functions for this simulation study
+load("Results/true_occupation_probabilities.RData") #true state occupation probabilities for each setting
+load("Results/true_parameters.RData") #true piecewise exponential parameters for each setting
+random.seeds <- read_csv("Data/randomSeeds.csv")$simulationSeeds #random seeds for data generation to ensure reproducibility
 
 # Simulation Setting ------------------------------------------------------
-
-# Some Sample Parameters for Debugging
-# sample_size <- 100
-# n_sims <- 500
-# n_imps <- 5
-# cancer_type <- "MESO"
-# beta <- 0
-
 
 #run_sim: runs a simulation for a given setting
 #sample_size: number of patients in each simulated dataset

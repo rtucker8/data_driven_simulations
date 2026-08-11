@@ -5,11 +5,11 @@
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=10GB
-#SBATCH --time=02:00:00
+#SBATCH --time=06:00:00
 #SBATCH --account=wdem2
 #SBATCH --partition=standard
 #SBATCH --output=logs/%x-%A_%a.log
-#SBATCH --array=1-2
+#SBATCH --array=1-216
 
 cd /home/rbtucker/data_driven_simulations
 module load R

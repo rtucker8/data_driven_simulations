@@ -34,11 +34,11 @@
 # mstate     : illness-death model utilities
 # PWEXP      : piecewise exponential model fitting
 # patchwork  : combine ggplots
-pacman::p_load(tidyverse, mstate, PWEXP, patchwork)
+library(tidyverse, mstate, PWEXP, patchwork)
 
 # Load custom helper functions used for fitting, simulation,
 # and state occupation probability estimation.
-source("Code/0_data_driven_simulation_helper.R")
+source("R/simulation_helper.R")
 
 # ==============================================================================
 # Load and clean TCGA data
@@ -49,7 +49,7 @@ source("Code/0_data_driven_simulation_helper.R")
 cancer_types <- c("LIHC", "MESO", "PRAD", "KICH", "KIRC", "UCEC")
 
 tcga <- read_csv(
-  "/Users/rachelgonzalez/Documents/Dissertation/Chapter 1/TCGA/tcga_clean.csv"
+  "Data/tcga_clean.csv"
 ) %>%
   filter(type %in% cancer_types) %>%
   # Remove logically inconsistent observations
@@ -217,7 +217,7 @@ for (cancer in cancer_types) {
 # Save fitted simulation parameters
 save(
   truth,
-  file = "true_parameters.RData"
+  file = "Results/true_parameters.RData"
 )
 
 # ==============================================================================
@@ -295,7 +295,7 @@ make_plots <- function(setting, n = 100, seed = NULL) {
 
 # Load random seeds used to generate reproducible simulation examples.
 random.seeds <- read_csv(
-  "randomSeeds.csv"
+  "Data/randomSeeds.csv"
 )$simulationSeeds
 
 # The following block creates PDF diagnostics for every cancer type and simulations.
@@ -384,7 +384,7 @@ for (setting in names(truth)) {
 # Save estimated occupation probabilities.
 save(
   empirical_truth,
-  file = "true_occupation_probabilities.RData"
+  file = "Results/true_occupation_probabilities.RData"
 )
 
 
@@ -392,8 +392,8 @@ save(
 # Create state occupation probability plots
 # ==============================================================================
 
-load("true_occupation_probabilities.RData")
-load("true_parameters.RData")
+load("Results/true_occupation_probabilities.RData")
+load("Results/true_parameters.RData")
 
 # Convert nested list structure into one plotting dataframe
 empirical_truth_long <- purrr::imap_dfr(
@@ -574,10 +574,10 @@ for (j in 1:nrow(values)) {
   )
 }
 
-# Exportfigure collection
+# Export figure collection
 
 pdf(
-  "model_dynamics.pdf",
+  "Figures/model_dynamics.pdf",
   height = 8,
   width = 10
 )
