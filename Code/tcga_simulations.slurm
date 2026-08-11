@@ -9,7 +9,7 @@
 #SBATCH --account=wdem2
 #SBATCH --partition=standard
 #SBATCH --output=logs/%x-%A_%a.log
-#SBATCH --array=1-216
+#SBATCH --array=1-108
 
 cd /home/rbtucker/data_driven_simulations
 module load R
