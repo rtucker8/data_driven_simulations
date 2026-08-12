@@ -159,7 +159,7 @@ can be used to reproduce the tables and figures presented in the paper.
 
 # Run Time
 
-Computation time for the imputation settings depends on the number of imputations
+Computation time for the simulation settings depends on the number of imputations
 used in the proposed algorithms. When using M=10 imputations, generating results for a 
 single simulation setting takes approximately 15 minutes. However, settings with 
 M=200 imputations takes upwards of 4 hours to run.
