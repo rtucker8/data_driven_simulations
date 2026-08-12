@@ -113,8 +113,9 @@ repository’s Data folder.
 
 After cloning this repository to your local machine, the main simulation
 can be run with code/run_local_sim.R. This runs the simulation for all
-parameter combinations assessed in the manuscript. Since the simulations
-are computationally intensive, we recommend reproducing the results for
+parameter combinations assessed in the manuscrip and is set up to be run in parallel using `furrr`.
+Since the simulations are computationally intensive, especially for settings with large numbers
+of imputations, we recommend reproducing the results for
 select parameter combinations by modifying the `params` dataframe at the
 beginning of the script. For example, to run 500 simulations associated
 with the LIHC setting, a sample size of 100, varying imputation number
@@ -131,7 +132,7 @@ params <- crossing(
 ```
 
 For users wanting to reproduce the results from the entire simulation
-study, we recommend using a cluster. `tcga_simulations.slurm` provides
+study, we strongly recommend using a cluster. `tcga_simulations.slurm` provides
 an example batch submission script. The user and account fields, as well
 as the cluster directory path should be filled in so the simulations can
 run in your cluster environment. It works by defining an array over all
@@ -152,6 +153,17 @@ for the estimates over time. Files starting with `coverage_data` report
 the joint coverage probabilities over time for each of the studies
 methods.
 
+For users who do not want to fun the full simulation study, precomputed
+simulation results are provided in `results_precomputed`. These results
+can be used to reproduce the tables and figures presented in the paper.
+
+# Run Time
+
+Computation time for the imputation settings depends on the number of imputations
+used in the proposed algorithms. When using M=10 imputations, generating results for a 
+single simulation setting takes approximately 15 minutes. However, settings with 
+M=200 imputations takes upwards of 4 hours to run.
+
 # Reproducing the Figures
 
 After running the simulations, or by using the pre-computed output, the
@@ -159,18 +171,6 @@ figures from the manuscript can be reproduced using:
 
 The resulting figures will be saved to figures/.
 
-# Computational Requirements
-
-The full simulation study requires approximately:
-
-- Runtime:
-- Memory:
-- CPU:
-
-The local simulations are set up to be run in parallel using `furrr`.
-
-For users who do not want to fun the full simulation study, precomputed
-simulation results are provided in `results_precomputed`.
 
 # Citation
 
