@@ -11,6 +11,7 @@ library(tidyverse)
 dirs <- c(
   "Results/lihc"
 )
+
 coverage_data <- list.files(
   path = dirs,
   pattern = "^coverage_data_.*\\.csv$",
@@ -105,7 +106,7 @@ for (i in seq_along(group_data)) {
     ),
     plot = p,
     height = 5,
-    width = 10
+    width = 20
   )
 
   p
